@@ -1,0 +1,5 @@
+:concurrency: 2
+
+:queues:
+  - [document_ingestion, 2]
+  - [default, 1]

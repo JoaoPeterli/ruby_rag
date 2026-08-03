@@ -1,0 +1,16 @@
+# Cadastro
+
+O usuário deverá informar nome.
+
+O CPF será validado.
+
+A senha será criptografada.
+
+# Averbação
+
+A averbação procura uma apólice.
+
+Caso não encontre,
+gera uma pendência.
+
+Depois envia para análise.
