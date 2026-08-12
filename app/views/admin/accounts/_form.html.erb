@@ -1,0 +1,32 @@
+<div class="card">
+  <div class="card-body">
+    <%= form_with model: account, url: url do |form| %>
+      <% if account.errors.any? %>
+        <div class="alert alert-danger">
+          <ul class="mb-0">
+            <% account.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="account_name" class="form-label">Nome</label>
+          <%= form.text_field :name, class: "form-control", required: true %>
+        </div>
+      </div>
+
+      <% if account.persisted? %>
+        <div class="mb-3 form-check">
+          <%= form.check_box :active, class: "form-check-input" %>
+          <label class="form-check-label" for="account_active">Ativa</label>
+        </div>
+        <p class="text-secondary">Status de operador é alterado à parte, na página da conta (exige confirmar sua api_key).</p>
+      <% end %>
+
+      <button type="submit" class="btn btn-primary"><%= account.persisted? ? "Salvar" : "Criar conta" %></button>
+    <% end %>
+  </div>
+</div>

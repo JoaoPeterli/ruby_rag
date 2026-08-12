@@ -1,0 +1,71 @@
+<div class="page-header d-print-none mb-3">
+  <div class="row align-items-center">
+    <div class="col">
+      <div class="mb-1">
+        <%= link_to admin_evaluations_path, class: "text-secondary" do %>
+          <i class="ti ti-arrow-left"></i> Avaliações
+        <% end %>
+      </div>
+      <h2 class="page-title">Avaliação #<%= @run.id %></h2>
+    </div>
+  </div>
+</div>
+
+<div class="card mb-4">
+  <div class="card-body">
+    <div class="datagrid">
+      <div class="datagrid-item">
+        <div class="datagrid-title">Casos</div>
+        <div class="datagrid-content"><%= @run.cases_count %></div>
+      </div>
+      <div class="datagrid-item">
+        <div class="datagrid-title">Período</div>
+        <div class="datagrid-content">
+          <%= @run.started_at&.strftime("%d/%m/%Y %H:%M") %> —
+          <%= @run.finished_at&.strftime("%d/%m/%Y %H:%M") || "em andamento" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h3 class="mb-3">Resumo</h3>
+<div class="card mb-4">
+  <div class="card-body">
+    <div class="datagrid">
+      <% @run.summary.each do |key, value| %>
+        <div class="datagrid-item">
+          <div class="datagrid-title"><%= key %></div>
+          <div class="datagrid-content"><%= value %></div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<h3 class="mb-3">Resultados (<%= @run.rag_eval_results.size %>)</h3>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-vcenter card-table">
+      <thead>
+        <tr>
+          <th>Pergunta</th>
+          <th>Categoria</th>
+          <th>Erro?</th>
+          <th>Resposta</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @run.rag_eval_results.each do |result| %>
+          <tr>
+            <td><%= result.rag_eval_case.question %></td>
+            <td><%= result.rag_eval_case.category %></td>
+            <td><%= result.errored ? "sim — #{result.error_message}" : "não" %></td>
+            <td><%= truncate(result.answer.to_s, length: 200) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

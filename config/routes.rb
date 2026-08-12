@@ -25,10 +25,49 @@ Rails.application.routes.draw do
 
         resources :failures, only: [ :index ] do
           post :retry_all, on: :collection
+          post :reconcile_stale_processing, on: :collection
         end
 
         resource :dashboard, only: [ :show ]
       end
     end
   end
+
+  namespace :admin do
+    resource :session, only: [ :new, :create, :destroy ]
+    resource :dashboard, only: [ :show ]
+    resources :documents, only: [ :index, :show ]
+    resources :queries, only: [ :index, :show ]
+    resources :evaluations, only: [ :index, :show, :create ]
+
+    resources :failures, only: [ :index ] do
+      post :retry_all, on: :collection
+      post :reconcile_stale_processing, on: :collection
+    end
+
+    # api_only omite :new/:edit dos resources por padrão (routes de
+    # formulário não fazem sentido numa API) — precisam ser pedidas
+    # explicitamente aqui, já que essa é a parte HTML do app.
+    resources :accounts, only: [ :index, :show, :new, :create, :edit, :update, :destroy ] do
+      member do
+        patch :update_operator
+      end
+    end
+
+    resources :audit_logs, only: [ :index ]
+
+    resources :users, only: [ :index, :show, :new, :create, :edit, :update, :destroy ]
+  end
+
+  # Backoffice por conta (User + senha) -- diferente de /admin (que é
+  # o backoffice interno da AverbGo, autenticado por Account/api_key
+  # e enxerga todas as contas).
+  namespace :portal do
+    resource :session, only: [ :new, :create, :destroy ]
+    resource :password, only: [ :edit, :update ]
+    resource :dashboard, only: [ :show ]
+    resources :documents, only: [ :index, :show, :new, :create ]
+  end
+
+  root to: "admin/dashboards#show"
 end

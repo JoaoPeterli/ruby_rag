@@ -29,6 +29,15 @@ module RubyRagAverbgo
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
 
+    # O painel admin (Admin::*, ver app/controllers/admin/) precisa de
+    # sessão/cookies pra login — reativado só pra isso, a API sob
+    # api/v1/* (ApplicationController < ActionController::API) continua
+    # sem esse middleware.
+    config.session_store :cookie_store, key: "_ruby_rag_averbgo_admin_session"
+    config.middleware.use ActionDispatch::Cookies
+    config.middleware.use config.session_store, config.session_options
+    config.middleware.use ActionDispatch::Flash
+
     config.active_job.queue_adapter = :sidekiq
 
     # schema.rb (Ruby DSL) não captura triggers/functions SQL crus,
@@ -36,5 +45,9 @@ module RubyRagAverbgo
     # de teste (carregado a partir do schema) fica sem o trigger e
     # search_vector nunca é preenchido. structure.sql captura tudo.
     config.active_record.schema_format = :sql
+
+    config.generators do |g|
+      g.test_framework :rspec, fixture: false
+    end
   end
 end

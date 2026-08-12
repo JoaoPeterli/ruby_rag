@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-bs-theme="dark">
+  <head>
+    <title>AverbGo — Portal</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.46.0/dist/tabler-icons.min.css">
+    <%= stylesheet_link_tag "admin" %>
+    <%= javascript_importmap_tags %>
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js" defer></script>
+  </head>
+  <body>
+    <div class="page">
+      <% if current_user %>
+        <header class="navbar navbar-expand-md navbar-light d-print-none">
+          <div class="container-xl">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
+              <%= link_to portal_dashboard_path, class: "d-flex align-items-center" do %>
+                <span class="avatar avatar-sm me-2 bg-primary text-white">AG</span>
+                AverbGo — Portal
+              <% end %>
+            </h1>
+
+            <div class="navbar-nav flex-row order-md-last">
+              <div class="nav-item dropdown">
+                <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown">
+                  <span class="avatar avatar-sm bg-secondary-lt"><%= current_user.email[0].upcase %></span>
+                  <div class="d-none d-xl-block ps-2">
+                    <div><%= current_user.email %></div>
+                    <div class="mt-1 small text-secondary"><%= current_user.account.name %></div>
+                  </div>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                  <%= link_to "Trocar senha", edit_portal_password_path, class: "dropdown-item" %>
+                  <%= button_to "Sair", portal_session_path, method: :delete, class: "dropdown-item", form: { class: "inline-form" } %>
+                </div>
+              </div>
+            </div>
+
+            <div class="collapse navbar-collapse" id="navbar-menu">
+              <div class="d-flex flex-column flex-md-row flex-fill align-items-stretch align-items-md-center">
+                <ul class="navbar-nav">
+                  <% [
+                       [ "Início", portal_dashboard_path, "ti-home" ],
+                       [ "Documentos", portal_documents_path, "ti-files" ]
+                     ].each do |label, path, icon| %>
+                    <li class="nav-item <%= "active" if current_page?(path) %>">
+                      <%= link_to path, class: "nav-link" do %>
+                        <span class="nav-link-icon"><i class="ti <%= icon %>"></i></span>
+                        <span class="nav-link-title"><%= label %></span>
+                      <% end %>
+                    </li>
+                  <% end %>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </header>
+      <% end %>
+
+      <div class="page-wrapper">
+        <div class="page-body">
+          <div class="container-xl">
+            <% if notice.present? %>
+              <div class="alert alert-success alert-dismissible" role="alert"><%= notice %></div>
+            <% end %>
+
+            <% if alert.present? %>
+              <div class="alert alert-danger alert-dismissible" role="alert"><%= alert %></div>
+            <% end %>
+
+            <%= yield %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

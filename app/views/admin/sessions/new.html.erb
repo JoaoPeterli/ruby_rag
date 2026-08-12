@@ -1,0 +1,23 @@
+<div class="auth-page">
+  <div class="container-tight py-4">
+    <div class="text-center mb-4">
+      <span class="avatar avatar-md bg-primary text-white">AG</span>
+    </div>
+    <div class="card card-md">
+      <div class="card-body">
+        <h2 class="h2 text-center mb-4">Entrar no painel admin</h2>
+        <p class="text-secondary text-center mb-4">Use a <code>api_key</code> de uma conta operadora (a mesma usada na API).</p>
+
+        <%= form_with url: admin_session_path, method: :post do %>
+          <div class="mb-2">
+            <label for="api_key" class="form-label">api_key</label>
+            <input type="password" name="api_key" id="api_key" class="form-control" autofocus required>
+          </div>
+          <div class="form-footer">
+            <button type="submit" class="btn btn-primary w-100">Entrar</button>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

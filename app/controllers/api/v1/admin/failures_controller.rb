@@ -8,7 +8,8 @@ module Api
           documents = Document.where(status: "failed").order(updated_at: :desc)
 
           render json: {
-            documents: documents.map { |document| serialize(document) }
+            documents: documents.map { |document| serialize(document) },
+            stuck_processing_count: Document.where(status: "processing").count
           }
         end
 
@@ -18,6 +19,16 @@ module Api
           render json: { retried: retried }
         rescue Documents::RetryFailedIngestionsService::Error => error
           render json: { error: error.message }, status: :unprocessable_entity
+        end
+
+        # Documentos presos em "processing" (worker morto, job perdido) não
+        # aparecem em #index nem podem ser reenfileirados por #retry_all —
+        # esta ação os move para "failed" primeiro, de onde o fluxo normal
+        # de retry já dá conta.
+        def reconcile_stale_processing
+          reconciled = Documents::ReconcileStaleProcessingDocumentsService.call
+
+          render json: { reconciled: reconciled }
         end
 
         private

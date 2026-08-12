@@ -1,0 +1,27 @@
+<div class="auth-page">
+  <div class="container-tight py-4">
+    <div class="text-center mb-4">
+      <span class="avatar avatar-md bg-primary text-white">AG</span>
+    </div>
+    <div class="card card-md">
+      <div class="card-body">
+        <h2 class="h2 text-center mb-4">Entrar</h2>
+        <p class="text-secondary text-center mb-4">Use o email e a senha cadastrados pela sua conta.</p>
+
+        <%= form_with url: portal_session_path, method: :post do %>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" name="email" id="email" class="form-control" autofocus required>
+          </div>
+          <div class="mb-2">
+            <label for="password" class="form-label">Senha</label>
+            <input type="password" name="password" id="password" class="form-control" required>
+          </div>
+          <div class="form-footer">
+            <button type="submit" class="btn btn-primary w-100">Entrar</button>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

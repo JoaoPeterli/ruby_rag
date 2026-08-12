@@ -1,0 +1,46 @@
+<div class="page-header d-print-none mb-3">
+  <div class="row align-items-center">
+    <div class="col">
+      <h2 class="page-title">Log de auditoria</h2>
+      <div class="text-secondary mt-1">Ações administrativas sensíveis (contas, status de operador, recuperação de falhas).</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <% if @logs.empty? %>
+    <div class="empty">
+      <div class="empty-icon"><i class="ti ti-history"></i></div>
+      <p class="empty-title">Nenhum evento registrado ainda.</p>
+    </div>
+  <% else %>
+    <div class="table-responsive">
+      <table class="table table-vcenter card-table">
+        <thead>
+          <tr>
+            <th>Quando</th>
+            <th>Quem</th>
+            <th>Ação</th>
+            <th>Alvo</th>
+            <th>Detalhes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @logs.each do |log| %>
+            <tr>
+              <td class="text-secondary"><%= log.created_at.strftime("%d/%m/%Y %H:%M:%S") %></td>
+              <td><%= log.account.name %></td>
+              <td><code><%= log.action %></code></td>
+              <td><%= [ log.target_type, log.target_id ].compact.join(" #") %></td>
+              <td><code class="text-secondary"><%= log.details.to_json %></code></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card-footer">
+      <%= render "shared/pagination", total_count: @total_count %>
+    </div>
+  <% end %>
+</div>
