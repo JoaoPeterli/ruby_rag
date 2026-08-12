@@ -14,7 +14,7 @@ module Rag
       chunks = Rag::SearchService.call(
         question: @question,
         limit: DEFAULT_LIMIT
-      )
+      ).map(&:chunk)
 
       context = Rag::ContextBuilder.call(chunks)
 

@@ -8,12 +8,18 @@ class DocumentChunk < ApplicationRecord
 
   belongs_to :account, optional: true
 
-  has_neighbors :embedding
+  # Não é mais uma coluna: o vetor mora no Qdrant. Quem faz busca vetorial
+  # (Documents::VectorSearchService) preenche isso com o vetor retornado
+  # pelo Qdrant, pra MmrService/ContextCompression::SimilarityStrategy
+  # continuarem calculando cosseno em Ruby sobre chunks já recuperados.
+  attr_accessor :embedding
 
   scope :ordered, -> { order(:position) }
 
   before_validation :generate_content_hash
   before_validation :inherit_account_from_document
+
+  after_destroy :delete_from_vector_store
 
 
   validates :content, presence: true
@@ -63,5 +69,12 @@ class DocumentChunk < ApplicationRecord
       .gsub(/\r\n?/, "\n")
       .gsub(/[[:space:]]+/, " ")
       .strip
+  end
+
+  def delete_from_vector_store
+    Ai::VectorStoreService.default.delete(
+      collection: Ai::Configuration::QDRANT_DOCUMENT_CHUNKS_COLLECTION,
+      ids: [ id ]
+    )
   end
 end

@@ -29,7 +29,8 @@ module Documents
       minimum_similarity: DEFAULT_MINIMUM_SIMILARITY,
       relation: DocumentChunk.all,
       filters: Documents::MetadataFilters.empty,
-      scope_builder: Documents::MetadataScopeBuilder
+      scope_builder: Documents::MetadataScopeBuilder,
+      vector_store: Ai::VectorStoreService.default
     )
       @query = query
       @query_embedding = query_embedding
@@ -39,6 +40,7 @@ module Documents
       @relation = relation
       @filters = filters
       @scope_builder = scope_builder
+      @vector_store = vector_store
     end
 
     def call
@@ -48,8 +50,8 @@ module Documents
 
       candidates
         .filter_map
-        .with_index(1) do |chunk, position|
-          build_result(chunk, position)
+        .with_index(1) do |(chunk, score), position|
+          build_result(chunk, score, position)
         end
         .first(limit)
     end
@@ -64,17 +66,35 @@ module Documents
       :minimum_similarity,
       :relation,
       :filters,
-      :scope_builder
+      :scope_builder,
+      :vector_store
     )
 
     def search_candidates
-      filtered_scope
-        .nearest_neighbors(
-          :embedding,
-          query_embedding,
-          distance: "cosine"
+      ids = filtered_scope.pluck(:id)
+
+      return [] if ids.empty?
+
+      points =
+        vector_store.search(
+          collection: Ai::Configuration::QDRANT_DOCUMENT_CHUNKS_COLLECTION,
+          vector: query_embedding,
+          limit: candidate_limit,
+          ids: ids,
+          with_vector: true
         )
-        .first(candidate_limit)
+
+      chunks_by_id = DocumentChunk.where(id: points.map(&:id)).index_by(&:id)
+
+      points.filter_map do |point|
+        chunk = chunks_by_id[point.id]
+
+        next unless chunk
+
+        chunk.embedding = point.vector
+
+        [ chunk, point.score ]
+      end
     end
 
     def filtered_scope
@@ -84,8 +104,8 @@ module Documents
       )
     end
 
-    def build_result(chunk, position)
-      distance = extract_distance(chunk)
+    def build_result(chunk, score, position)
+      distance = extract_distance(score)
       similarity = calculate_similarity(distance)
 
       return if similarity < minimum_similarity
@@ -98,14 +118,12 @@ module Documents
       )
     end
 
-    def extract_distance(chunk)
-      distance = chunk.neighbor_distance
-
-      unless distance.is_a?(Numeric)
+    def extract_distance(score)
+      unless score.is_a?(Numeric)
         raise Error, "A distância vetorial retornada é inválida"
       end
 
-      distance.to_f
+      1.0 - score.to_f
     end
 
     def calculate_similarity(distance)
