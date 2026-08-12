@@ -18,21 +18,22 @@ module Documents
       question_embedding:,
       qa_result:,
       ttl: DEFAULT_TTL,
-      account_id: nil
+      account_id: nil,
+      vector_store: Ai::VectorStoreService.default
     )
       @question = question
       @question_embedding = question_embedding
       @qa_result = qa_result
       @ttl = ttl
       @account_id = account_id
+      @vector_store = vector_store
     end
 
     def call
       validate!
 
-      RagSemanticCacheEntry.create!(
+      entry = RagSemanticCacheEntry.create!(
         question: question,
-        question_embedding: question_embedding,
         answer: qa_result.answer,
         sources: serialize_sources(qa_result.sources),
         model: qa_result.model,
@@ -41,6 +42,15 @@ module Documents
         expires_at: Time.current + ttl,
         account_id: account_id
       )
+
+      vector_store.upsert(
+        collection: Ai::Configuration::QDRANT_SEMANTIC_CACHE_COLLECTION,
+        id: entry.id,
+        vector: question_embedding,
+        payload: { account_id: account_id }
+      )
+
+      entry
     rescue Error
       raise
     rescue StandardError => error
@@ -49,7 +59,7 @@ module Documents
 
     private
 
-    attr_reader :question, :question_embedding, :qa_result, :ttl, :account_id
+    attr_reader :question, :question_embedding, :qa_result, :ttl, :account_id, :vector_store
 
     def validate!
       unless question.is_a?(String) && question.strip.present?

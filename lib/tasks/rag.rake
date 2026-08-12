@@ -13,10 +13,10 @@ namespace :rag do
     puts "Pergunta: #{question}"
     puts
 
-    results.each_with_index do |chunk, index|
-      puts "#{index + 1}. #{chunk.content}"
-      puts "   Distância: #{chunk.neighbor_distance.round(4)}"
-      puts "   Documento: #{chunk.document.title}"
+    results.each_with_index do |result, index|
+      puts "#{index + 1}. #{result.chunk.content}"
+      puts "   Distância: #{result.distance.round(4)}"
+      puts "   Documento: #{result.chunk.document.title}"
       puts
     end
   end

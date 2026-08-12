@@ -15,7 +15,8 @@ module Documents
       run_id:,
       packing_tokens: DEFAULT_PACKING_TOKENS,
       overlap_tokens: DEFAULT_OVERLAP_TOKENS,
-      max_tokens: DEFAULT_MAX_TOKENS
+      max_tokens: DEFAULT_MAX_TOKENS,
+      vector_store: Ai::VectorStoreService.default
     )
       new(
         document: document,
@@ -23,7 +24,8 @@ module Documents
         run_id: run_id,
         packing_tokens: packing_tokens,
         overlap_tokens: overlap_tokens,
-        max_tokens: max_tokens
+        max_tokens: max_tokens,
+        vector_store: vector_store
       ).call
     end
 
@@ -33,7 +35,8 @@ module Documents
       run_id:,
       packing_tokens:,
       overlap_tokens:,
-      max_tokens:
+      max_tokens:,
+      vector_store: Ai::VectorStoreService.default
     )
       @document = document
       @text = text.to_s
@@ -41,6 +44,7 @@ module Documents
       @packing_tokens = packing_tokens
       @overlap_tokens = overlap_tokens
       @max_tokens = max_tokens
+      @vector_store = vector_store
     end
 
     def call
@@ -55,13 +59,20 @@ module Documents
       embedding_result =
         generate_embeddings(final_chunks)
 
-      attributes =
-        build_chunk_attributes(
-          final_chunks,
-          embedding_result.embeddings
-        )
+      validate_embeddings_count!(
+        final_chunks,
+        embedding_result.embeddings
+      )
 
-      persist_chunks!(attributes)
+      attributes =
+        build_chunk_attributes(final_chunks)
+
+      persisted_chunks = persist_chunks!(attributes)
+
+      upsert_vectors!(
+        persisted_chunks,
+        embedding_result.embeddings
+      )
 
       mark_as_completed!(
         final_chunks,
@@ -84,7 +95,8 @@ module Documents
                 :run_id,
                 :packing_tokens,
                 :overlap_tokens,
-                :max_tokens
+                :max_tokens,
+                :vector_store
 
     def validate!
       unless document.is_a?(Document) && document.persisted?
@@ -176,19 +188,11 @@ module Documents
       result
     end
 
-    def build_chunk_attributes(chunks, embeddings)
-      validate_embeddings_count!(
-        chunks,
-        embeddings
-      )
-
-      chunks.zip(embeddings).map.with_index do |pair, position|
-        content, embedding = pair
-
+    def build_chunk_attributes(chunks)
+      chunks.map.with_index do |content, position|
         {
           content: content,
           position: position,
-          embedding: embedding,
           metadata: chunk_metadata(content)
         }
       end
@@ -263,7 +267,14 @@ module Documents
         DocumentChunk.transaction do
           document.document_chunks.delete_all
 
-          attributes.each do |chunk_attributes|
+          # delete_all pula callbacks (after_destroy), então os pontos
+          # antigos no Qdrant precisam ser apagados explicitamente aqui.
+          vector_store.delete(
+            collection: Ai::Configuration::QDRANT_DOCUMENT_CHUNKS_COLLECTION,
+            filter: { document_id: document.id }
+          )
+
+          attributes.map do |chunk_attributes|
             document.document_chunks.create!(
               chunk_attributes
             )
@@ -274,6 +285,29 @@ module Documents
       raise Error,
             "Chunk duplicado detectado durante a ingestão do " \
             "documento #{document.id}: #{error.message}"
+    end
+
+    def upsert_vectors!(chunks, embeddings)
+      points = chunks.zip(embeddings).map do |chunk, embedding|
+        {
+          id: chunk.id,
+          vector: embedding,
+          payload: {
+            document_id: chunk.document_id,
+            account_id: chunk.account_id,
+            position: chunk.position
+          }
+        }
+      end
+
+      vector_store.upsert_batch(
+        collection: Ai::Configuration::QDRANT_DOCUMENT_CHUNKS_COLLECTION,
+        points: points
+      )
+
+      chunks.zip(embeddings).each do |chunk, embedding|
+        chunk.embedding = embedding
+      end
     end
 
     def mark_as_completed!(

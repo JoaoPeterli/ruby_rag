@@ -28,6 +28,12 @@ module Ai
         "text-embedding-3-small"
       )
 
+    EMBEDDING_BATCH_SIZE =
+      ENV.fetch(
+        "OPENAI_EMBEDDING_BATCH_SIZE",
+        100
+      ).to_i
+
     CHAT_MODEL =
       ENV.fetch(
         "OPENAI_CHAT_MODEL",
@@ -57,6 +63,20 @@ module Ai
         "OPENAI_HTTP_READ_TIMEOUT",
         60
       ).to_i
+
+    QDRANT_URL =
+      ENV.fetch(
+        "QDRANT_URL",
+        "http://localhost:6333"
+      )
+
+    QDRANT_API_KEY = ENV["QDRANT_API_KEY"]
+
+    QDRANT_VECTOR_SIZE = 1536
+
+    QDRANT_DOCUMENT_CHUNKS_COLLECTION = "document_chunks"
+
+    QDRANT_SEMANTIC_CACHE_COLLECTION = "semantic_cache_entries"
 
     class ConfigurationError < StandardError; end
 
@@ -108,6 +128,14 @@ module Ai
 
       def read_timeout
         HTTP_READ_TIMEOUT
+      end
+
+      def qdrant_url
+        QDRANT_URL
+      end
+
+      def qdrant_api_key
+        QDRANT_API_KEY
       end
 
       def validate!

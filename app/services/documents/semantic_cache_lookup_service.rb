@@ -16,23 +16,29 @@ module Documents
     def initialize(
       question_embedding:,
       minimum_similarity: DEFAULT_MINIMUM_SIMILARITY,
-      scope: RagSemanticCacheEntry.not_expired
+      scope: RagSemanticCacheEntry.not_expired,
+      vector_store: Ai::VectorStoreService.default
     )
       @question_embedding = question_embedding
       @minimum_similarity = minimum_similarity
       @scope = scope
+      @vector_store = vector_store
     end
 
     def call
       validate!
 
-      candidate = nearest_entry
+      point = nearest_point
 
-      return unless candidate
+      return unless point
 
-      similarity = calculate_similarity(candidate)
+      similarity = point.score.to_f.clamp(0.0, 1.0)
 
       return if similarity < minimum_similarity
+
+      candidate = scope.find_by(id: point.id)
+
+      return unless candidate
 
       register_hit(candidate)
 
@@ -45,7 +51,7 @@ module Documents
 
     private
 
-    attr_reader :question_embedding, :minimum_similarity, :scope
+    attr_reader :question_embedding, :minimum_similarity, :scope, :vector_store
 
     def validate!
       valid =
@@ -59,20 +65,17 @@ module Documents
             "question_embedding deve ser uma lista de números não vazia"
     end
 
-    def nearest_entry
-      scope
-        .nearest_neighbors(
-          :question_embedding,
-          question_embedding,
-          distance: "cosine"
-        )
-        .first
-    end
+    def nearest_point
+      ids = scope.pluck(:id)
 
-    def calculate_similarity(entry)
-      distance = entry.neighbor_distance.to_f
+      return nil if ids.empty?
 
-      (1.0 - distance).clamp(0.0, 1.0)
+      vector_store.search(
+        collection: Ai::Configuration::QDRANT_SEMANTIC_CACHE_COLLECTION,
+        vector: question_embedding,
+        limit: 1,
+        ids: ids
+      ).first
     end
 
     def register_hit(entry)
