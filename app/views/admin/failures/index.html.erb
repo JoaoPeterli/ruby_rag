@@ -1,0 +1,47 @@
+<div class="page-header d-print-none mb-3">
+  <div class="row align-items-center">
+    <div class="col"><h2 class="page-title">Falhas de ingestão</h2></div>
+    <div class="col-auto ms-auto d-flex gap-2">
+      <%= button_to "Reenfileirar todas as falhas", retry_all_admin_failures_path, method: :post, class: "btn btn-outline-primary",
+            form: { data: { turbo_confirm: "Reenfileirar todos os documentos com falha?" } } %>
+
+      <%= button_to "Recuperar documentos presos em processing (#{@stuck_processing_count})",
+            reconcile_stale_processing_admin_failures_path, method: :post, class: "btn btn-outline-primary",
+            form: { data: { turbo_confirm: "Mover documentos presos em processing (sem tentativa recente) para failed?" } } %>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <% if @documents.empty? %>
+    <div class="empty">
+      <div class="empty-icon"><i class="ti ti-mood-smile"></i></div>
+      <p class="empty-title">Nenhum documento com falha no momento.</p>
+    </div>
+  <% else %>
+    <div class="table-responsive">
+      <table class="table table-vcenter card-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Tentativas</th>
+            <th>Erro</th>
+            <th>Falhou em</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @documents.each do |document| %>
+            <tr>
+              <td><%= link_to document.id, admin_document_path(document) %></td>
+              <td><%= document.title %></td>
+              <td><%= document.metadata.to_h["ingestion_attempts"] %></td>
+              <td><%= document.metadata.to_h["ingestion_error"] %></td>
+              <td class="text-secondary"><%= document.metadata.to_h["ingestion_failed_at"] %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,8 @@
+<div class="mb-1">
+  <%= link_to admin_account_path(@account), class: "text-secondary" do %>
+    <i class="ti ti-arrow-left"></i> <%= @account.name %>
+  <% end %>
+</div>
+<h2 class="page-title mb-4">Editar conta</h2>
+
+<%= render "form", account: @account, url: admin_account_path(@account) %>

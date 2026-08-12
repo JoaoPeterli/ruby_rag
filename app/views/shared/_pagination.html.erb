@@ -1,0 +1,26 @@
+<% pages = total_pages(total_count) %>
+<% if pages > 1 %>
+  <div class="d-flex align-items-center mt-3">
+    <p class="m-0 text-secondary">Página <%= current_page %> de <%= pages %> (<%= total_count %> no total)</p>
+    <ul class="pagination m-0 ms-auto">
+      <li class="page-item <%= "disabled" if current_page <= 1 %>">
+        <% if current_page > 1 %>
+          <%= link_to url_for(request.query_parameters.merge(page: current_page - 1)), class: "page-link" do %>
+            <i class="ti ti-chevron-left"></i> anterior
+          <% end %>
+        <% else %>
+          <span class="page-link"><i class="ti ti-chevron-left"></i> anterior</span>
+        <% end %>
+      </li>
+      <li class="page-item <%= "disabled" if current_page >= pages %>">
+        <% if current_page < pages %>
+          <%= link_to url_for(request.query_parameters.merge(page: current_page + 1)), class: "page-link" do %>
+            próxima <i class="ti ti-chevron-right"></i>
+          <% end %>
+        <% else %>
+          <span class="page-link">próxima <i class="ti ti-chevron-right"></i></span>
+        <% end %>
+      </li>
+    </ul>
+  </div>
+<% end %>

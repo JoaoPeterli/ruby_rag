@@ -1,0 +1,38 @@
+<div class="page-header d-print-none mb-3">
+  <div class="row align-items-center">
+    <div class="col"><h2 class="page-title">Avaliações</h2></div>
+    <div class="col-auto ms-auto">
+      <%= button_to "Rodar nova avaliação", admin_evaluations_path, method: :post, class: "btn btn-primary",
+            form: { data: { turbo_confirm: "Rodar avaliação com os casos ativos agora?" } } %>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-vcenter card-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Casos</th>
+          <th>Iniciada em</th>
+          <th>Finalizada em</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @runs.each do |run| %>
+          <tr>
+            <td><%= link_to run.id, admin_evaluation_path(run) %></td>
+            <td><%= run.cases_count %></td>
+            <td><%= run.started_at&.strftime("%d/%m/%Y %H:%M") %></td>
+            <td><%= run.finished_at&.strftime("%d/%m/%Y %H:%M") || "em andamento" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card-footer">
+    <%= render "shared/pagination", total_count: @total_count %>
+  </div>
+</div>

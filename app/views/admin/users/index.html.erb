@@ -1,0 +1,41 @@
+<div class="page-header d-print-none mb-3">
+  <div class="row align-items-center">
+    <div class="col"><h2 class="page-title">Usuários</h2></div>
+    <div class="col-auto ms-auto">
+      <%= link_to new_admin_user_path(account_id: @account_filter), class: "btn btn-primary" do %>
+        <i class="ti ti-plus"></i> Novo usuário
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-vcenter card-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Email</th>
+          <th>Conta</th>
+          <th>Ativo?</th>
+          <th>Criado em</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @users.each do |user| %>
+          <tr>
+            <td><%= link_to user.id, admin_user_path(user) %></td>
+            <td><%= link_to user.email, admin_user_path(user) %></td>
+            <td><%= link_to user.account.name, admin_account_path(user.account) %></td>
+            <td><%= user.active? ? "sim" : "não" %></td>
+            <td class="text-secondary"><%= user.created_at.strftime("%d/%m/%Y %H:%M") %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card-footer">
+    <%= render "shared/pagination", total_count: @total_count %>
+  </div>
+</div>

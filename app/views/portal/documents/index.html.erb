@@ -1,0 +1,75 @@
+<div class="page-header d-print-none mb-3">
+  <div class="row align-items-center">
+    <div class="col"><h2 class="page-title">Documentos</h2></div>
+    <div class="col-auto ms-auto">
+      <% if upload_enabled? %>
+        <%= link_to new_portal_document_path, class: "btn btn-primary" do %>
+          <i class="ti ti-upload"></i> Novo documento
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <%= form_with url: portal_documents_path, method: :get, class: "d-flex align-items-center gap-2" do %>
+      <label for="status" class="form-label mb-0">Status</label>
+      <select name="status" id="status" class="form-select w-auto" onchange="this.form.requestSubmit()">
+        <option value="">Todos</option>
+        <% Document::STATUSES.each do |status| %>
+          <option value="<%= status %>" <%= "selected" if @status_filter == status %>><%= status %></option>
+        <% end %>
+      </select>
+    <% end %>
+  </div>
+
+  <% if @documents.empty? %>
+    <div class="empty">
+      <div class="empty-icon"><i class="ti ti-file-off"></i></div>
+      <p class="empty-title">
+        <% if @status_filter.present? %>
+          Nenhum documento com status "<%= @status_filter %>"
+        <% else %>
+          Nenhum documento enviado ainda
+        <% end %>
+      </p>
+      <% if upload_enabled? %>
+        <div class="empty-action">
+          <%= link_to "Enviar o primeiro documento", new_portal_document_path, class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="table-responsive">
+      <table class="table table-vcenter card-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Status</th>
+            <th>Tipo</th>
+            <th>Chunks</th>
+            <th>Criado em</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @documents.each do |document| %>
+            <tr>
+              <td><%= link_to document.id, portal_document_path(document) %></td>
+              <td><%= link_to document.title, portal_document_path(document) %></td>
+              <td><span class="badge <%= status_badge_class(document.status) %>"><%= document.status %></span></td>
+              <td><%= document.tipo_documento %></td>
+              <td><%= document.document_chunks.size %></td>
+              <td class="text-secondary"><%= document.created_at.strftime("%d/%m/%Y %H:%M") %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card-footer">
+      <%= render "shared/pagination", total_count: @total_count %>
+    </div>
+  <% end %>
+</div>

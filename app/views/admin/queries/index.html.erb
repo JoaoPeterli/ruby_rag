@@ -1,0 +1,40 @@
+<div class="page-header d-print-none mb-3">
+  <div class="row align-items-center">
+    <div class="col"><h2 class="page-title">Perguntas</h2></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-vcenter card-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Pergunta</th>
+          <th>Status</th>
+          <th>Cache?</th>
+          <th>Confiança</th>
+          <th>Duração (ms)</th>
+          <th>Criado em</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @queries.each do |query| %>
+          <tr>
+            <td><%= link_to query.id, admin_query_path(query) %></td>
+            <td><%= link_to truncate(query.question, length: 80), admin_query_path(query) %></td>
+            <td><span class="badge <%= status_badge_class(query.status) %>"><%= query.status %></span></td>
+            <td><%= query.cache_hit ? "sim" : "não" %></td>
+            <td><%= query.rag_answer&.confidence_level || "—" %></td>
+            <td><%= query.duration_ms %></td>
+            <td class="text-secondary"><%= query.created_at.strftime("%d/%m/%Y %H:%M") %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card-footer">
+    <%= render "shared/pagination", total_count: @total_count %>
+  </div>
+</div>

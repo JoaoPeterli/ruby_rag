@@ -1,0 +1,99 @@
+<div class="page-header d-print-none mb-3">
+  <div class="row align-items-center">
+    <div class="col">
+      <div class="mb-1">
+        <%= link_to admin_accounts_path, class: "text-secondary" do %>
+          <i class="ti ti-arrow-left"></i> Contas
+        <% end %>
+      </div>
+      <h2 class="page-title"><%= @account.name %></h2>
+    </div>
+    <div class="col-auto ms-auto d-flex gap-2">
+      <%= link_to "Editar", edit_admin_account_path(@account), class: "btn btn-outline-primary" %>
+      <%= button_to "Remover conta", admin_account_path(@account), method: :delete, class: "btn btn-outline-danger",
+            form: { data: { turbo_confirm: "Remover a conta #{@account.name}? Documentos/perguntas ficam órfãos (não são apagados)." } } %>
+    </div>
+  </div>
+</div>
+
+<div class="card mb-4">
+  <div class="card-body">
+    <div class="datagrid">
+      <div class="datagrid-item">
+        <div class="datagrid-title">api_key</div>
+        <div class="datagrid-content" data-controller="clipboard">
+          <code data-clipboard-target="source"><%= @account.api_key %></code>
+          <button type="button" class="btn btn-sm btn-ghost-secondary" data-action="clipboard#copy" data-clipboard-target="button">
+            <i class="ti ti-copy"></i> Copiar
+          </button>
+        </div>
+      </div>
+
+      <div class="datagrid-item">
+        <div class="datagrid-title">Operadora?</div>
+        <div class="datagrid-content"><span class="badge <%= @account.operator? ? "bg-success-lt" : "bg-secondary-lt" %>"><%= @account.operator? ? "sim" : "não" %></span></div>
+      </div>
+
+      <div class="datagrid-item">
+        <div class="datagrid-title">Ativa?</div>
+        <div class="datagrid-content"><span class="badge <%= @account.active? ? "bg-success-lt" : "bg-danger-lt" %>"><%= @account.active? ? "sim" : "não" %></span></div>
+      </div>
+
+      <div class="datagrid-item">
+        <div class="datagrid-title">Documentos</div>
+        <div class="datagrid-content"><%= @documents_count %></div>
+      </div>
+
+      <div class="datagrid-item">
+        <div class="datagrid-title">Perguntas</div>
+        <div class="datagrid-content"><%= @queries_count %></div>
+      </div>
+
+      <div class="datagrid-item">
+        <div class="datagrid-title">Usuários</div>
+        <div class="datagrid-content"><%= link_to "Ver usuários desta conta", admin_users_path(account_id: @account.id) %></div>
+      </div>
+
+      <div class="datagrid-item">
+        <div class="datagrid-title">Criada em</div>
+        <div class="datagrid-content"><%= @account.created_at.strftime("%d/%m/%Y %H:%M") %></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h3 class="mb-2">Status de operador</h3>
+<p class="text-secondary">
+  Dá acesso total ao painel admin, sem escopo por conta. Confirme a sua
+  própria api_key pra <%= @account.operator? ? "rebaixar" : "promover" %>
+  esta conta — uma sessão sozinha não é suficiente.
+</p>
+
+<%
+  will_be_operator = !@account.operator?
+  confirm_message =
+    if will_be_operator
+      "Promover #{@account.name} a operadora?"
+    else
+      "Rebaixar #{@account.name} de operadora?"
+    end
+%>
+
+<div class="card">
+  <div class="card-body">
+    <%= form_with url: update_operator_admin_account_path(@account), method: :patch do %>
+      <input type="hidden" name="operator" value="<%= will_be_operator %>">
+
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <label for="confirm_api_key" class="form-label">Sua api_key (<%= current_account.name %>)</label>
+          <input type="password" name="confirm_api_key" id="confirm_api_key" class="form-control" required>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary" data-turbo-confirm="<%= confirm_message %>">
+        <%= will_be_operator ? "Promover a operadora" : "Rebaixar de operadora" %>
+      </button>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,35 @@
+/* Tema Tabler (vendorizado via CDN nos layouts) com a cor de marca da
+   AverbGo — o resto (cards, tabelas, badges, formulários, botões,
+   paginação) vem pronto do framework, sem CSS próprio. */
+:root {
+  --tblr-primary: #0ca678;
+  --tblr-primary-rgb: 12, 166, 120;
+  --tblr-link-color: #0ca678;
+  --tblr-link-color-rgb: 12, 166, 120;
+}
+
+/* ---- tela de login (fora do navbar, precisa se centralizar sozinha) ---- */
+.auth-page {
+  min-height: calc(100vh - 4rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---- dropzone de upload (Tabler não tem um componente pronto pra isso) ---- */
+.dropzone {
+  display: block;
+  border: 1.5px dashed var(--tblr-border-color);
+  border-radius: var(--tblr-border-radius-lg);
+  background: var(--tblr-bg-surface-secondary);
+  padding: 1.75rem 1.25rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .12s ease, background .12s ease;
+}
+.dropzone:hover, .dropzone:focus-within {
+  border-color: var(--tblr-primary);
+  background: color-mix(in srgb, var(--tblr-primary) 6%, var(--tblr-bg-surface));
+}
+.dropzone-icon { font-size: 1.8rem; line-height: 1; display: block; margin-bottom: .5rem; color: var(--tblr-primary); }
+.dropzone input[type="file"] { display: block; margin: .85rem auto 0; font-size: .82rem; max-width: 100%; }

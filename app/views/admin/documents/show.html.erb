@@ -1,0 +1,68 @@
+<div class="page-header d-print-none mb-3">
+  <div class="row align-items-center">
+    <div class="col">
+      <div class="mb-1">
+        <%= link_to admin_documents_path, class: "text-secondary" do %>
+          <i class="ti ti-arrow-left"></i> Documentos
+        <% end %>
+      </div>
+      <h2 class="page-title"><%= @document.title %></h2>
+    </div>
+  </div>
+</div>
+
+<div class="card mb-4">
+  <div class="card-body">
+    <div class="datagrid">
+      <div class="datagrid-item">
+        <div class="datagrid-title">Status</div>
+        <div class="datagrid-content"><span class="badge <%= status_badge_class(@document.status) %>"><%= @document.status %></span></div>
+      </div>
+      <div class="datagrid-item">
+        <div class="datagrid-title">Conta</div>
+        <div class="datagrid-content"><%= link_to @document.account.name, admin_account_path(@document.account) %></div>
+      </div>
+      <div class="datagrid-item">
+        <div class="datagrid-title">Ramo / Seguradora / Cliente / Tipo</div>
+        <div class="datagrid-content"><%= [ @document.ramo, @document.seguradora, @document.cliente, @document.tipo_documento ].compact.join(" · ").presence || "—" %></div>
+      </div>
+      <div class="datagrid-item">
+        <div class="datagrid-title">Versão de conteúdo</div>
+        <div class="datagrid-content"><%= @document.content_version %></div>
+      </div>
+      <div class="datagrid-item">
+        <div class="datagrid-title">Erro de ingestão</div>
+        <div class="datagrid-content"><%= @document.metadata.to_h["ingestion_error"] || "—" %></div>
+      </div>
+      <div class="datagrid-item">
+        <div class="datagrid-title">Criado em</div>
+        <div class="datagrid-content"><%= @document.created_at.strftime("%d/%m/%Y %H:%M") %></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h3 class="mb-3">Chunks (<%= @chunks.size %>)</h3>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-vcenter card-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Conteúdo</th>
+          <th>Injeção suspeita?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @chunks.each do |chunk| %>
+          <tr>
+            <td><%= chunk.position %></td>
+            <td><%= truncate(chunk.content, length: 240) %></td>
+            <td><%= chunk.metadata["prompt_injection_suspicious"] ? "sim" : "não" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,8 @@
+<div class="mb-1">
+  <%= link_to admin_users_path, class: "text-secondary" do %>
+    <i class="ti ti-arrow-left"></i> Usuários
+  <% end %>
+</div>
+<h2 class="page-title mb-4">Novo usuário</h2>
+
+<%= render "form", user: @user, url: admin_users_path %>

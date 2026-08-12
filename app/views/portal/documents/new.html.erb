@@ -1,0 +1,75 @@
+<div class="page-header d-print-none mb-3">
+  <div class="row align-items-center">
+    <div class="col">
+      <div class="mb-1">
+        <%= link_to portal_documents_path, class: "text-secondary" do %>
+          <i class="ti ti-arrow-left"></i> Documentos
+        <% end %>
+      </div>
+      <h2 class="page-title">Novo documento</h2>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <p class="text-secondary mb-4">
+      Envie um PDF ou imagem de uma apólice/endosso. O texto é extraído
+      automaticamente (OCR) e o documento entra na fila de indexação —
+      acompanhe o status na lista de documentos.
+    </p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <%= form_with url: portal_documents_path, method: :post, multipart: true do %>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="document_title" class="form-label">Título</label>
+          <input type="text" name="document[title]" id="document_title" class="form-control" placeholder="Ex.: Apólice 123.456 — Endosso 2" required>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-4">
+          <label for="document_source_file" class="form-label">Arquivo</label>
+          <label class="dropzone" for="document_source_file">
+            <span class="dropzone-icon"><i class="ti ti-cloud-upload"></i></span>
+            <div class="fw-bold">Clique para escolher um arquivo</div>
+            <div class="text-secondary small">PDF, PNG, JPG ou TIFF</div>
+            <input type="file" name="document[source_file]" id="document_source_file" accept=".pdf,.png,.jpg,.jpeg,.tiff" required>
+          </label>
+        </div>
+      </div>
+
+      <h3 class="mb-3">Metadados (opcionais)</h3>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="document_ramo" class="form-label">Ramo</label>
+          <input type="text" name="document[ramo]" id="document_ramo" class="form-control">
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="document_seguradora" class="form-label">Seguradora</label>
+          <input type="text" name="document[seguradora]" id="document_seguradora" class="form-control">
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="document_cliente" class="form-label">Cliente</label>
+          <input type="text" name="document[cliente]" id="document_cliente" class="form-control">
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="document_tipo_documento" class="form-label">Tipo de documento</label>
+          <input type="text" name="document[tipo_documento]" id="document_tipo_documento" class="form-control" placeholder="apolice, endosso, manual...">
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="document_vigencia_ano" class="form-label">Ano de vigência</label>
+          <input type="number" name="document[vigencia_ano]" id="document_vigencia_ano" class="form-control">
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary mt-2">
+        <i class="ti ti-upload"></i> Enviar documento
+      </button>
+    <% end %>
+  </div>
+</div>

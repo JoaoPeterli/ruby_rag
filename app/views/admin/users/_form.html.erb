@@ -1,0 +1,46 @@
+<div class="card">
+  <div class="card-body">
+    <%= form_with model: user, url: url do |form| %>
+      <% if user.errors.any? %>
+        <div class="alert alert-danger">
+          <ul class="mb-0">
+            <% user.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="user_account_id" class="form-label">Conta</label>
+          <%= form.collection_select :account_id, Account.order(:name), :id, :name, { prompt: true, selected: user.account_id }, { class: "form-select" } %>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label for="user_email" class="form-label">Email</label>
+          <%= form.email_field :email, class: "form-control", required: true %>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label for="user_password" class="form-label"><%= user.persisted? ? "Nova senha (deixe em branco pra manter a atual)" : "Senha" %></label>
+          <%= form.password_field :password, class: "form-control", required: !user.persisted?, minlength: 8 %>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label for="user_password_confirmation" class="form-label">Confirmar senha</label>
+          <%= form.password_field :password_confirmation, class: "form-control", required: !user.persisted?, minlength: 8 %>
+        </div>
+      </div>
+
+      <% if user.persisted? %>
+        <div class="mb-3 form-check">
+          <%= form.check_box :active, class: "form-check-input" %>
+          <label class="form-check-label" for="user_active">Ativo</label>
+        </div>
+      <% end %>
+
+      <button type="submit" class="btn btn-primary"><%= user.persisted? ? "Salvar" : "Criar usuário" %></button>
+    <% end %>
+  </div>
+</div>

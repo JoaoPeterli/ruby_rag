@@ -1,0 +1,52 @@
+<div class="page-header d-print-none mb-3">
+  <div class="row align-items-center">
+    <div class="col"><h2 class="page-title">Documentos</h2></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <%= form_with url: admin_documents_path, method: :get, class: "d-flex align-items-center gap-2" do %>
+      <label for="status" class="form-label mb-0">Status</label>
+      <select name="status" id="status" class="form-select w-auto" onchange="this.form.requestSubmit()">
+        <option value="">Todos</option>
+        <% Document::STATUSES.each do |status| %>
+          <option value="<%= status %>" <%= "selected" if @status_filter == status %>><%= status %></option>
+        <% end %>
+      </select>
+    <% end %>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-vcenter card-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Título</th>
+          <th>Status</th>
+          <th>Cliente</th>
+          <th>Tipo</th>
+          <th>Chunks</th>
+          <th>Criado em</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @documents.each do |document| %>
+          <tr>
+            <td><%= link_to document.id, admin_document_path(document) %></td>
+            <td><%= link_to document.title, admin_document_path(document) %></td>
+            <td><span class="badge <%= status_badge_class(document.status) %>"><%= document.status %></span></td>
+            <td><%= document.cliente %></td>
+            <td><%= document.tipo_documento %></td>
+            <td><%= document.document_chunks.size %></td>
+            <td class="text-secondary"><%= document.created_at.strftime("%d/%m/%Y %H:%M") %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card-footer">
+    <%= render "shared/pagination", total_count: @total_count %>
+  </div>
+</div>

@@ -1,0 +1,106 @@
+<div class="page-header d-print-none mb-3">
+  <div class="row align-items-center">
+    <div class="col">
+      <div class="mb-1">
+        <%= link_to admin_queries_path, class: "text-secondary" do %>
+          <i class="ti ti-arrow-left"></i> Perguntas
+        <% end %>
+      </div>
+      <h2 class="page-title"><%= @query.question %></h2>
+    </div>
+  </div>
+</div>
+
+<div class="card mb-4">
+  <div class="card-body">
+    <div class="datagrid">
+      <div class="datagrid-item">
+        <div class="datagrid-title">Status</div>
+        <div class="datagrid-content"><span class="badge <%= status_badge_class(@query.status) %>"><%= @query.status %></span></div>
+      </div>
+      <div class="datagrid-item">
+        <div class="datagrid-title">Query de busca</div>
+        <div class="datagrid-content"><%= @query.search_query %></div>
+      </div>
+      <div class="datagrid-item">
+        <div class="datagrid-title">Cache hit?</div>
+        <div class="datagrid-content"><%= @query.cache_hit ? "sim" : "não" %></div>
+      </div>
+      <div class="datagrid-item">
+        <div class="datagrid-title">Duração / Tokens</div>
+        <div class="datagrid-content"><%= @query.duration_ms %> ms · <%= @query.total_tokens %> tokens</div>
+      </div>
+      <div class="datagrid-item">
+        <div class="datagrid-title">Criado em</div>
+        <div class="datagrid-content"><%= @query.created_at.strftime("%d/%m/%Y %H:%M") %></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% if @query.rag_answer %>
+  <h3 class="mb-3">Resposta</h3>
+  <div class="card mb-4">
+    <div class="card-body">
+      <%= simple_format(@query.rag_answer.answer) %>
+
+      <div class="datagrid mt-3">
+        <div class="datagrid-item">
+          <div class="datagrid-title">Modelo</div>
+          <div class="datagrid-content"><%= @query.rag_answer.model %></div>
+        </div>
+        <div class="datagrid-item">
+          <div class="datagrid-title">Grounded / Refused</div>
+          <div class="datagrid-content"><%= @query.rag_answer.grounded ? "sim" : "não" %> / <%= @query.rag_answer.refused ? "sim" : "não" %></div>
+        </div>
+        <div class="datagrid-item">
+          <div class="datagrid-title">Confiança</div>
+          <div class="datagrid-content"><%= @query.rag_answer.confidence_level %> (<%= @query.rag_answer.confidence_score %>)</div>
+        </div>
+        <div class="datagrid-item">
+          <div class="datagrid-title">Cobertura de citação</div>
+          <div class="datagrid-content"><%= @query.rag_answer.citation_coverage %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<h3 class="mb-3">Resultados de retrieval (<%= @query.rag_retrieval_results.size %>)</h3>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-vcenter card-table">
+      <thead>
+        <tr>
+          <th>Posição</th>
+          <th>Chunk</th>
+          <th>Citado?</th>
+          <th>Hybrid</th>
+          <th>Rerank</th>
+          <th>Combined</th>
+          <th>MMR</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @query.rag_retrieval_results.each do |result| %>
+          <tr>
+            <td><%= result.position %></td>
+            <td>
+              <% if result.document_chunk %>
+                <%= link_to "chunk ##{result.document_chunk_id}", admin_document_path(result.document_chunk.document_id) %>
+              <% else %>
+                —
+              <% end %>
+            </td>
+            <td><%= result.cited ? "sim" : "não" %></td>
+            <td><%= result.hybrid_score %></td>
+            <td><%= result.rerank_score %></td>
+            <td><%= result.combined_score %></td>
+            <td><%= result.mmr_score %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
