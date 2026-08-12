@@ -2,7 +2,6 @@
 -- PostgreSQL database dump
 --
 
-\restrict lgOOMUBZzhWm5BKYhQpFyNwpmZr54hChEblhuzJhJcyBfOin8RPKKPuVuihgyas
 
 -- Dumped from database version 16.14 (Debian 16.14-1.pgdg12+1)
 -- Dumped by pg_dump version 16.14 (Debian 16.14-1.pgdg12+1)
@@ -17,20 +16,6 @@ SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
-
---
--- Name: vector; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS vector WITH SCHEMA public;
-
-
---
--- Name: EXTENSION vector; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION vector IS 'vector data type and ivfflat and hnsw access methods';
-
 
 --
 -- Name: document_chunks_search_vector_update(); Type: FUNCTION; Schema: public; Owner: -
@@ -90,6 +75,140 @@ ALTER SEQUENCE public.accounts_id_seq OWNED BY public.accounts.id;
 
 
 --
+-- Name: active_storage_attachments; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.active_storage_attachments (
+    id bigint NOT NULL,
+    name character varying NOT NULL,
+    record_type character varying NOT NULL,
+    record_id bigint NOT NULL,
+    blob_id bigint NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: active_storage_attachments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.active_storage_attachments_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: active_storage_attachments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.active_storage_attachments_id_seq OWNED BY public.active_storage_attachments.id;
+
+
+--
+-- Name: active_storage_blobs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.active_storage_blobs (
+    id bigint NOT NULL,
+    key character varying NOT NULL,
+    filename character varying NOT NULL,
+    content_type character varying,
+    metadata text,
+    service_name character varying NOT NULL,
+    byte_size bigint NOT NULL,
+    checksum character varying,
+    created_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: active_storage_blobs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.active_storage_blobs_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: active_storage_blobs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.active_storage_blobs_id_seq OWNED BY public.active_storage_blobs.id;
+
+
+--
+-- Name: active_storage_variant_records; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.active_storage_variant_records (
+    id bigint NOT NULL,
+    blob_id bigint NOT NULL,
+    variation_digest character varying NOT NULL
+);
+
+
+--
+-- Name: active_storage_variant_records_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.active_storage_variant_records_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: active_storage_variant_records_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.active_storage_variant_records_id_seq OWNED BY public.active_storage_variant_records.id;
+
+
+--
+-- Name: admin_audit_logs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.admin_audit_logs (
+    id bigint NOT NULL,
+    account_id bigint NOT NULL,
+    action character varying NOT NULL,
+    target_type character varying,
+    target_id bigint,
+    details jsonb DEFAULT '{}'::jsonb NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: admin_audit_logs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.admin_audit_logs_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: admin_audit_logs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.admin_audit_logs_id_seq OWNED BY public.admin_audit_logs.id;
+
+
+--
 -- Name: ar_internal_metadata; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -111,7 +230,6 @@ CREATE TABLE public.document_chunks (
     content text NOT NULL,
     "position" integer NOT NULL,
     metadata jsonb DEFAULT '{}'::jsonb NOT NULL,
-    embedding public.vector(1536),
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
     content_hash character varying NOT NULL,
@@ -450,7 +568,6 @@ ALTER SEQUENCE public.rag_retrieval_results_id_seq OWNED BY public.rag_retrieval
 CREATE TABLE public.rag_semantic_cache_entries (
     id bigint NOT NULL,
     question text NOT NULL,
-    question_embedding public.vector(1536) NOT NULL,
     answer text NOT NULL,
     sources jsonb DEFAULT '[]'::jsonb NOT NULL,
     model character varying,
@@ -494,10 +611,72 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: users; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.users (
+    id bigint NOT NULL,
+    account_id bigint NOT NULL,
+    email character varying NOT NULL,
+    password_digest character varying NOT NULL,
+    active boolean DEFAULT true NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.users_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+
+--
 -- Name: accounts id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.accounts ALTER COLUMN id SET DEFAULT nextval('public.accounts_id_seq'::regclass);
+
+
+--
+-- Name: active_storage_attachments id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.active_storage_attachments ALTER COLUMN id SET DEFAULT nextval('public.active_storage_attachments_id_seq'::regclass);
+
+
+--
+-- Name: active_storage_blobs id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.active_storage_blobs ALTER COLUMN id SET DEFAULT nextval('public.active_storage_blobs_id_seq'::regclass);
+
+
+--
+-- Name: active_storage_variant_records id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.active_storage_variant_records ALTER COLUMN id SET DEFAULT nextval('public.active_storage_variant_records_id_seq'::regclass);
+
+
+--
+-- Name: admin_audit_logs id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.admin_audit_logs ALTER COLUMN id SET DEFAULT nextval('public.admin_audit_logs_id_seq'::regclass);
 
 
 --
@@ -571,11 +750,50 @@ ALTER TABLE ONLY public.rag_semantic_cache_entries ALTER COLUMN id SET DEFAULT n
 
 
 --
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
+
+--
 -- Name: accounts accounts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.accounts
     ADD CONSTRAINT accounts_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: active_storage_attachments active_storage_attachments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.active_storage_attachments
+    ADD CONSTRAINT active_storage_attachments_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: active_storage_blobs active_storage_blobs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.active_storage_blobs
+    ADD CONSTRAINT active_storage_blobs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: active_storage_variant_records active_storage_variant_records_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.active_storage_variant_records
+    ADD CONSTRAINT active_storage_variant_records_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: admin_audit_logs admin_audit_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.admin_audit_logs
+    ADD CONSTRAINT admin_audit_logs_pkey PRIMARY KEY (id);
 
 
 --
@@ -675,10 +893,67 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: index_accounts_on_api_key; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX index_accounts_on_api_key ON public.accounts USING btree (api_key);
+
+
+--
+-- Name: index_active_storage_attachments_on_blob_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_active_storage_attachments_on_blob_id ON public.active_storage_attachments USING btree (blob_id);
+
+
+--
+-- Name: index_active_storage_attachments_uniqueness; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_active_storage_attachments_uniqueness ON public.active_storage_attachments USING btree (record_type, record_id, name, blob_id);
+
+
+--
+-- Name: index_active_storage_blobs_on_key; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_active_storage_blobs_on_key ON public.active_storage_blobs USING btree (key);
+
+
+--
+-- Name: index_active_storage_variant_records_uniqueness; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_active_storage_variant_records_uniqueness ON public.active_storage_variant_records USING btree (blob_id, variation_digest);
+
+
+--
+-- Name: index_admin_audit_logs_on_account_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_admin_audit_logs_on_account_id ON public.admin_audit_logs USING btree (account_id);
+
+
+--
+-- Name: index_admin_audit_logs_on_action; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_admin_audit_logs_on_action ON public.admin_audit_logs USING btree (action);
+
+
+--
+-- Name: index_admin_audit_logs_on_target_type_and_target_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_admin_audit_logs_on_target_type_and_target_id ON public.admin_audit_logs USING btree (target_type, target_id);
 
 
 --
@@ -707,13 +982,6 @@ CREATE INDEX index_document_chunks_on_document_id ON public.document_chunks USIN
 --
 
 CREATE UNIQUE INDEX index_document_chunks_on_document_id_and_position ON public.document_chunks USING btree (document_id, "position");
-
-
---
--- Name: index_document_chunks_on_embedding_hnsw; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_document_chunks_on_embedding_hnsw ON public.document_chunks USING hnsw (embedding public.vector_cosine_ops);
 
 
 --
@@ -892,10 +1160,17 @@ CREATE INDEX index_rag_semantic_cache_entries_on_expires_at ON public.rag_semant
 
 
 --
--- Name: index_rag_semantic_cache_on_embedding_hnsw; Type: INDEX; Schema: public; Owner: -
+-- Name: index_users_on_account_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_rag_semantic_cache_on_embedding_hnsw ON public.rag_semantic_cache_entries USING hnsw (question_embedding public.vector_cosine_ops);
+CREATE INDEX index_users_on_account_id ON public.users USING btree (account_id);
+
+
+--
+-- Name: index_users_on_email; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_users_on_email ON public.users USING btree (email);
 
 
 --
@@ -938,11 +1213,27 @@ ALTER TABLE ONLY public.rag_eval_results
 
 
 --
+-- Name: users fk_rails_61ac11da2b; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT fk_rails_61ac11da2b FOREIGN KEY (account_id) REFERENCES public.accounts(id);
+
+
+--
 -- Name: rag_semantic_cache_entries fk_rails_90c22d3f68; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.rag_semantic_cache_entries
     ADD CONSTRAINT fk_rails_90c22d3f68 FOREIGN KEY (account_id) REFERENCES public.accounts(id);
+
+
+--
+-- Name: active_storage_variant_records fk_rails_993965df05; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.active_storage_variant_records
+    ADD CONSTRAINT fk_rails_993965df05 FOREIGN KEY (blob_id) REFERENCES public.active_storage_blobs(id);
 
 
 --
@@ -959,6 +1250,14 @@ ALTER TABLE ONLY public.document_chunks
 
 ALTER TABLE ONLY public.rag_queries
     ADD CONSTRAINT fk_rails_a9b8bd7c99 FOREIGN KEY (account_id) REFERENCES public.accounts(id);
+
+
+--
+-- Name: active_storage_attachments fk_rails_c3b3935057; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.active_storage_attachments
+    ADD CONSTRAINT fk_rails_c3b3935057 FOREIGN KEY (blob_id) REFERENCES public.active_storage_blobs(id);
 
 
 --
@@ -994,6 +1293,14 @@ ALTER TABLE ONLY public.documents
 
 
 --
+-- Name: admin_audit_logs fk_rails_ebed90115e; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.admin_audit_logs
+    ADD CONSTRAINT fk_rails_ebed90115e FOREIGN KEY (account_id) REFERENCES public.accounts(id);
+
+
+--
 -- Name: rag_eval_cases fk_rails_f5c7bbc1ff; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1005,24 +1312,30 @@ ALTER TABLE ONLY public.rag_eval_cases
 -- PostgreSQL database dump complete
 --
 
-\unrestrict lgOOMUBZzhWm5BKYhQpFyNwpmZr54hChEblhuzJhJcyBfOin8RPKKPuVuihgyas
 
-SET search_path TO "$user", public;
+SET search_path TO public;
 
 INSERT INTO "schema_migrations" (version) VALUES
-('20260728003819'),
-('20260728113152'),
-('20260728113843'),
-('20260728174442'),
-('20260729013835'),
-('20260730124524'),
-('20260730132426'),
-('20260730151430'),
-('20260731140406'),
-('20260731140515'),
-('20260731141804'),
-('20260731144551'),
-('20260731144611'),
-('20260731173853'),
+('20260811105633'),
+('20260811105546'),
+('20260810145656'),
+('20260807111627'),
+('20260807111626'),
+('20260807111625'),
+('20260803164423'),
 ('20260803164406'),
-('20260803164423');
+('20260731173853'),
+('20260731144611'),
+('20260731144551'),
+('20260731141804'),
+('20260731140515'),
+('20260731140406'),
+('20260730151430'),
+('20260730132426'),
+('20260730124524'),
+('20260729013835'),
+('20260728174442'),
+('20260728113843'),
+('20260728113152'),
+('20260728003819');
+

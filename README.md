@@ -85,7 +85,7 @@ ativa. Contas com `operator: true` também têm acesso aos endpoints
 
 ```bash
 RAILS_ENV=test bin/rails db:test:prepare
-bin/rails test
+bundle exec rspec
 ```
 
 O schema é versionado via `db/structure.sql` (não `schema.rb`), porque
