@@ -9,11 +9,25 @@ gem "bootsnap", require: false
 gem "kamal", require: false
 gem "thruster", require: false
 gem "openai"
-gem "neighbor"
 gem "dotenv-rails", groups: [ :development, :test ]
 gem "tiktoken_ruby"
 gem "sidekiq"
 gem "faraday", "~> 2.0"
+gem "bcrypt", "~> 3.1.7"
+
+# Painel admin (app é api_only; essas gems dão views/assets/JS só pra
+# essa parte da aplicação — ver config/application.rb).
+gem "propshaft", "~> 1.3"
+gem "importmap-rails", "~> 2.2"
+gem "turbo-rails", "~> 2.0"
+gem "stimulus-rails", "~> 1.3"
+
+# Upload de documento (Portal::) -> S3 + OCR. Infra fica pronta mas
+# desligada por padrão (ver DOCUMENT_UPLOAD_ENABLED) até a qualidade
+# do OCR ser avaliada.
+gem "aws-sdk-s3", require: false
+gem "pdf-reader"
+gem "rtesseract"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -21,4 +35,6 @@ group :development, :test do
   gem "brakeman", require: false
   gem "rubocop-rails-omakase", require: false
   gem "solargraph", require: false
+  gem "rspec-rails", "~> 8.0"
+  gem "factory_bot_rails", "~> 6.5"
 end
