@@ -6,6 +6,8 @@ module Api
       include ActionController::Live
 
       MAX_QUESTION_LENGTH = 2_000
+      MAX_HISTORY_TURNS = 20
+      MAX_HISTORY_TURN_LENGTH = 4_000
 
       rate_limit(
         to: 20,
@@ -19,13 +21,15 @@ module Api
 
       def create
         question = params.require(:question)
+        history = conversation_history_param
 
         return render_question_too_long unless valid_question_length?(question)
+        return render_conversation_history_too_long unless valid_conversation_history?(history)
 
         result = Documents::QuestionAnsweringService.call(
           question: question,
           account_id: Current.account.id,
-          conversation_history: conversation_history_param
+          conversation_history: history
         )
 
         render json: Documents::QuestionAnsweringResultSerializer.call(result: result)
@@ -39,8 +43,10 @@ module Api
       # mais pra trocar o status HTTP, só comunicar via corpo do evento).
       def stream
         question = params.require(:question)
+        history = conversation_history_param
 
         return render_question_too_long unless valid_question_length?(question)
+        return render_conversation_history_too_long unless valid_conversation_history?(history)
 
         response.headers["Content-Type"] = "text/event-stream"
         response.headers["Cache-Control"] = "no-cache"
@@ -49,7 +55,7 @@ module Api
         result = Documents::QuestionAnsweringService.call(
           question: question,
           account_id: Current.account.id,
-          conversation_history: conversation_history_param
+          conversation_history: history
         ) do |delta|
           write_sse(event: "delta", data: { content: delta })
         end
@@ -75,6 +81,23 @@ module Api
           json: {
             error: "A pergunta é longa demais " \
                    "(máximo #{MAX_QUESTION_LENGTH} caracteres)"
+          },
+          status: :unprocessable_entity
+        )
+      end
+
+      def valid_conversation_history?(history)
+        return false if history.size > MAX_HISTORY_TURNS
+
+        history.all? { |turn| turn[:content].to_s.length <= MAX_HISTORY_TURN_LENGTH }
+      end
+
+      def render_conversation_history_too_long
+        render(
+          json: {
+            error: "O histórico da conversa é longo demais " \
+                   "(máximo #{MAX_HISTORY_TURNS} mensagens de " \
+                   "#{MAX_HISTORY_TURN_LENGTH} caracteres cada)"
           },
           status: :unprocessable_entity
         )
