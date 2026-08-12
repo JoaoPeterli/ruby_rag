@@ -7,6 +7,7 @@ class Account < ApplicationRecord
   has_many :document_chunks, dependent: :nullify
   has_many :rag_queries, dependent: :nullify
   has_many :rag_eval_cases, dependent: :nullify
+  has_many :users, dependent: :destroy
 
   before_validation :generate_api_key, on: :create
 

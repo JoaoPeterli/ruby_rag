@@ -2,6 +2,7 @@ require "digest"
 
 class Document < ApplicationRecord
   STATUSES = %w[
+    uploaded
     pending
     queued
     processing
@@ -17,8 +18,13 @@ class Document < ApplicationRecord
     inverse_of: :document
   )
 
+  # Upload via Portal:: (ver Documents::UploadDocumentService) cria o
+  # documento antes da extração de texto rodar (Documents::OcrService)
+  # -- nesse status ainda não existe `content`.
+  has_one_attached :source_file
+
   validates :title, presence: true
-  validates :content, presence: true
+  validates :content, presence: true, unless: -> { status.in?(%w[uploaded failed]) }
   validates :status, inclusion: { in: STATUSES }
 
   validates :vigencia_ano,
