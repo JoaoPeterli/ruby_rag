@@ -12,7 +12,7 @@ gem "openai"
 gem "dotenv-rails", groups: [ :development, :test ]
 gem "tiktoken_ruby"
 gem "sidekiq"
-gem "faraday", "~> 2.0"
+gem "faraday", "~> 2.14"
 gem "bcrypt", "~> 3.1.7"
 
 # Painel admin (app é api_only; essas gems dão views/assets/JS só pra
