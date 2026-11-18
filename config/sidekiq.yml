@@ -2,4 +2,5 @@
 
 :queues:
   - [document_ingestion, 2]
+  - [document_ocr, 2]
   - [default, 1]
