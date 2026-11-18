@@ -16,7 +16,7 @@ amazon:
   access_key_id: <%= Rails.application.credentials.dig(:aws, :access_key_id) %>
   secret_access_key: <%= Rails.application.credentials.dig(:aws, :secret_access_key) %>
   region: <%= ENV.fetch("AWS_REGION", "us-east-1") %>
-  bucket: <%= ENV.fetch("AWS_S3_BUCKET", "averbgo-documents-#{Rails.env}") %>
+  bucket: <%= ENV.fetch("AWS_S3_BUCKET", "jlp-documents-#{Rails.env}") %>
 
 # Remember not to checkin your GCS keyfile to a repository
 # google:

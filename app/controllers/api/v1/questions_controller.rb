@@ -9,10 +9,13 @@ module Api
       MAX_HISTORY_TURNS = 20
       MAX_HISTORY_TURN_LENGTH = 4_000
 
+      # Por conta, não por IP: com cadastro aberto, contas legítimas
+      # atrás do mesmo IP corporativo não podem se atrapalhar, e uma
+      # conta mal-intencionada trocando de IP não escapa do limite.
       rate_limit(
         to: 20,
         within: 1.minute,
-        by: -> { request.remote_ip },
+        by: -> { Current.account.id },
         with: -> {
           render json: { error: "Limite de requisições excedido" },
                  status: :too_many_requests

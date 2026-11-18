@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR" data-bs-theme="dark">
   <head>
-    <title>AverbGo — Portal</title>
+    <title>JLP — Portal</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
@@ -22,8 +22,8 @@
             </button>
             <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
               <%= link_to portal_dashboard_path, class: "d-flex align-items-center" do %>
-                <span class="avatar avatar-sm me-2 bg-primary text-white">AG</span>
-                AverbGo — Portal
+                <span class="avatar avatar-sm me-2 bg-primary text-white">JLP</span>
+                JLP — Portal
               <% end %>
             </h1>
 
@@ -37,6 +37,9 @@
                   </div>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                  <% if current_user.owner? %>
+                    <%= link_to "Usuários", portal_users_path, class: "dropdown-item" %>
+                  <% end %>
                   <%= link_to "Trocar senha", edit_portal_password_path, class: "dropdown-item" %>
                   <%= button_to "Sair", portal_session_path, method: :delete, class: "dropdown-item", form: { class: "inline-form" } %>
                 </div>

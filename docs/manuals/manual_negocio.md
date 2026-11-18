@@ -1,4 +1,4 @@
-# Manual de Negócio — AverbGo RAG
+# Manual de Negócio — JLP RAG
 
 > Gerado por leitura automatizada do código-fonte (Claude) em 2026-08-06.
 >
@@ -13,7 +13,7 @@
 
 ## 1. O que o sistema resolve
 
-O AverbGo é uma API que responde perguntas em linguagem natural sobre
+O JLP é uma API que responde perguntas em linguagem natural sobre
 documentos de averbação de apólices de seguro. Um usuário (ou sistema
 cliente, via API) manda uma pergunta; o sistema busca nos documentos
 já cadastrados os trechos mais relevantes e gera uma resposta **citando

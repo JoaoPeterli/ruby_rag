@@ -19,7 +19,7 @@ class AddAccountIdToMultipleTables < ActiveRecord::Migration[8.0]
     )
 
     operator_account_id = create_account!(
-      name: "Operador AverbGo",
+      name: "Operador JLP",
       operator: true
     )
 

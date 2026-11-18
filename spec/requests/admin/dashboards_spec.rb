@@ -15,13 +15,4 @@ RSpec.describe "Admin::Dashboards", type: :request do
 
     expect(response).to have_http_status(:success)
   end
-
-  it "root path renders the dashboard for a logged-in operator" do
-    operator = create(:account, operator: true)
-    sign_in_as(operator)
-
-    get root_path
-
-    expect(response).to have_http_status(:success)
-  end
 end

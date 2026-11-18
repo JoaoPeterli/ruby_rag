@@ -2,8 +2,8 @@
 # check=error=true
 
 # This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
-# docker build -t ruby_rag_averbgo .
-# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name ruby_rag_averbgo ruby_rag_averbgo
+# docker build -t ruby_rag_jlp .
+# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name ruby_rag_jlp ruby_rag_jlp
 
 # For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
 

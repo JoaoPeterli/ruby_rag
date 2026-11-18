@@ -15,6 +15,36 @@ RSpec.describe "Smoke", type: :request do
     expect(response).to have_http_status(:success)
   end
 
+  it "full self-serve journey: signup, invite a teammate, logout" do
+    get root_path
+    expect(response).to redirect_to(new_portal_session_path)
+
+    post portal_registration_path, params: {
+      account_name: "Corretora Fumaça",
+      email: "dono@corretora-fumaca.com",
+      password: "senha1234",
+      password_confirmation: "senha1234"
+    }
+    expect(response).to redirect_to(portal_dashboard_path)
+    follow_redirect!
+    expect(response).to have_http_status(:success)
+
+    get root_path
+    expect(response).to have_http_status(:success)
+
+    get portal_users_path
+    expect(response).to have_http_status(:success)
+
+    post portal_users_path, params: { email: "colega@corretora-fumaca.com" }
+    expect(response).to redirect_to(portal_users_path)
+
+    delete portal_session_path
+    expect(response).to redirect_to(new_portal_session_path)
+
+    get portal_dashboard_path
+    expect(response).to redirect_to(new_portal_session_path)
+  end
+
   it "full admin journey: login, every screen, logout" do
     operator = create(:account, operator: true)
     document = create(:document, title: "Manual", content: "Conteúdo.", account: operator, status: "completed")
@@ -28,9 +58,6 @@ RSpec.describe "Smoke", type: :request do
     post admin_session_path, params: { api_key: operator.api_key }
     expect(response).to redirect_to(admin_dashboard_path)
     follow_redirect!
-    expect(response).to have_http_status(:success)
-
-    get root_path
     expect(response).to have_http_status(:success)
 
     get admin_documents_path

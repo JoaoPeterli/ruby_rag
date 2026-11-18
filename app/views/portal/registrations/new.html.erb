@@ -1,0 +1,48 @@
+<div class="auth-page">
+  <div class="container-tight py-4">
+    <div class="text-center mb-4">
+      <span class="avatar avatar-md bg-primary text-white">JLP</span>
+    </div>
+    <div class="card card-md">
+      <div class="card-body">
+        <h2 class="h2 text-center mb-4">Criar conta</h2>
+
+        <% if @account.errors.any? || @user.errors.any? %>
+          <div class="alert alert-danger">
+            <ul class="mb-0">
+              <% (@account.errors.full_messages + @user.errors.full_messages).each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <%= form_with url: portal_registration_path, method: :post do %>
+          <div class="mb-3">
+            <label for="account_name" class="form-label">Nome da empresa</label>
+            <input type="text" name="account_name" id="account_name" class="form-control" value="<%= @account.name %>" autofocus required>
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Seu email</label>
+            <input type="email" name="email" id="email" class="form-control" value="<%= @user.email %>" required>
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Senha</label>
+            <input type="password" name="password" id="password" class="form-control" required minlength="8">
+          </div>
+          <div class="mb-2">
+            <label for="password_confirmation" class="form-label">Confirmar senha</label>
+            <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" required minlength="8">
+          </div>
+          <div class="form-footer">
+            <button type="submit" class="btn btn-primary w-100">Criar conta</button>
+          </div>
+        <% end %>
+
+        <div class="text-center text-secondary mt-3">
+          Já tem conta? <%= link_to "Entrar", new_portal_session_path %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

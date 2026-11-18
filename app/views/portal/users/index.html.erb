@@ -1,0 +1,66 @@
+<h2 class="page-title mb-4">Usuários da conta</h2>
+
+<% if flash[:generated_password] %>
+  <div class="alert alert-success" data-controller="clipboard">
+    Senha gerada pra <strong><%= flash[:generated_password_email] %></strong>:
+    <code data-clipboard-target="source"><%= flash[:generated_password] %></code>
+    <button type="button" class="btn btn-sm btn-ghost-secondary" data-action="clipboard#copy" data-clipboard-target="button">
+      <i class="ti ti-copy"></i> Copiar
+    </button>
+    <div class="mt-1 text-secondary small">Copie agora e repasse pro usuário — essa senha não fica salva em nenhum outro lugar.</div>
+  </div>
+<% end %>
+
+<div class="card mb-4">
+  <div class="card-header">
+    <h3 class="card-title">Convidar usuário</h3>
+  </div>
+  <div class="card-body">
+    <%= form_with url: portal_users_path, method: :post, class: "row g-2 align-items-end" do %>
+      <div class="col-auto">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" name="email" id="email" class="form-control" required>
+      </div>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-primary">
+          <i class="ti ti-user-plus"></i> Convidar
+        </button>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-vcenter card-table">
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th>Papel</th>
+          <th>Status</th>
+          <th>Criado em</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @teammates.each do |teammate| %>
+          <tr>
+            <td><%= teammate.email %></td>
+            <td><%= teammate.owner? ? "Dono" : "Usuário" %></td>
+            <td><span class="badge <%= teammate.active? ? "bg-success-lt" : "bg-secondary-lt" %>"><%= teammate.active? ? "ativo" : "inativo" %></span></td>
+            <td class="text-secondary"><%= teammate.created_at.strftime("%d/%m/%Y %H:%M") %></td>
+            <td>
+              <% unless teammate == current_user %>
+                <%= button_to (teammate.active? ? "Desativar" : "Ativar"),
+                      portal_user_path(teammate),
+                      method: :patch,
+                      params: { active: !teammate.active? },
+                      class: "btn btn-sm btn-outline-secondary" %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

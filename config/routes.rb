@@ -60,14 +60,20 @@ Rails.application.routes.draw do
   end
 
   # Backoffice por conta (User + senha) -- diferente de /admin (que é
-  # o backoffice interno da AverbGo, autenticado por Account/api_key
+  # o backoffice interno da JLP, autenticado por Account/api_key
   # e enxerga todas as contas).
   namespace :portal do
     resource :session, only: [ :new, :create, :destroy ]
+    resource :registration, only: [ :new, :create ]
     resource :password, only: [ :edit, :update ]
     resource :dashboard, only: [ :show ]
     resources :documents, only: [ :index, :show, :new, :create ]
+
+    # Gestão de time (convidar/desativar colega de conta) -- só pro
+    # usuário "owner" (quem criou a conta no cadastro). Ver
+    # Portal::UsersController#require_owner!.
+    resources :users, only: [ :index, :create, :update ]
   end
 
-  root to: "admin/dashboards#show"
+  root to: "portal/dashboards#show"
 end

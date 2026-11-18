@@ -1,4 +1,4 @@
-# Manual Técnico — AverbGo RAG
+# Manual Técnico — JLP RAG
 
 > Gerado por leitura automatizada do código-fonte (Claude) em 2026-08-06.
 > Cobre a arquitetura, o modelo de dados e os fluxos como implementados

@@ -1,14 +1,14 @@
-# Manual Técnico do Sistema AverbGo
+# Manual Técnico do Sistema JLP
 
 Versão: 1.0
 
-Este documento descreve o funcionamento técnico do sistema AverbGo utilizado para recepção, validação, processamento e averbação de documentos fiscais eletrônicos.
+Este documento descreve o funcionamento técnico do sistema JLP utilizado para recepção, validação, processamento e averbação de documentos fiscais eletrônicos.
 
 ---
 
 # Capítulo 1 - Visão Geral
 
-O AverbGo é responsável por receber documentos fiscais eletrônicos enviados por APIs, robôs de captura ou integrações diretas.
+O JLP é responsável por receber documentos fiscais eletrônicos enviados por APIs, robôs de captura ou integrações diretas.
 
 Os principais documentos suportados são:
 
@@ -271,7 +271,7 @@ Operadores podem iniciar o reprocessamento manual.
 
 # Capítulo 20 - Considerações Finais
 
-O AverbGo foi projetado para suportar alto volume de documentos fiscais.
+O JLP foi projetado para suportar alto volume de documentos fiscais.
 
 A utilização de PostgreSQL, pgvector, embeddings e inteligência artificial permite criar mecanismos avançados de busca semântica.
 

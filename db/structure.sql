@@ -2,6 +2,7 @@
 -- PostgreSQL database dump
 --
 
+\restrict iomLoY7fzB88qvBtypNshnfWvT6Odz4xffRz93TDkTz0ZLxiIE6JxDxrphaHfBK
 
 -- Dumped from database version 16.14 (Debian 16.14-1.pgdg12+1)
 -- Dumped by pg_dump version 16.14 (Debian 16.14-1.pgdg12+1)
@@ -621,7 +622,8 @@ CREATE TABLE public.users (
     password_digest character varying NOT NULL,
     active boolean DEFAULT true NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    owner boolean DEFAULT false NOT NULL
 );
 
 
@@ -1312,10 +1314,14 @@ ALTER TABLE ONLY public.rag_eval_cases
 -- PostgreSQL database dump complete
 --
 
+\unrestrict iomLoY7fzB88qvBtypNshnfWvT6Odz4xffRz93TDkTz0ZLxiIE6JxDxrphaHfBK
+
+
 
 SET search_path TO public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260812150000'),
 ('20260811105633'),
 ('20260811105546'),
 ('20260810145656'),
@@ -1338,4 +1344,3 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20260728113843'),
 ('20260728113152'),
 ('20260728003819');
-
